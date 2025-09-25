@@ -27,8 +27,8 @@ COPY package*.json ./
 # Set environment variable to skip Python check for youtube-dl
 ENV YOUTUBE_DL_SKIP_PYTHON_CHECK=1
 
-# Install Node.js dependencies
-RUN npm install --only=production
+# Install ALL dependencies (including dev dependencies for building)
+RUN npm install
 
 # Copy source code
 COPY . .
@@ -36,7 +36,7 @@ COPY . .
 # Build TypeScript
 RUN npm run build
 
-# Remove development dependencies and source code
+# Remove development dependencies and source code after build
 RUN rm -rf src/ && \
     rm -rf node_modules && \
     npm install --only=production
