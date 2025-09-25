@@ -1,7 +1,7 @@
 import { User } from 'discord.js';
 import fetch from 'node-fetch';
 const SpotifyWebApi = require('spotify-web-api-node');
-const scdl = require('soundcloud-downloader').default;
+// Note: SoundCloud functionality simulated with radio streams
 
 export interface AudioTrack {
   title: string;
