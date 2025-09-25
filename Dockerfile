@@ -1,16 +1,7 @@
-# Use Node.js LTS version
-FROM node:18-alpine
+# Use Node.js 22 LTS version (required for Discord.js voice)
+FROM node:22-alpine
 
-# Set working directory
-WORKDIR /app
-
-# Copy package files
-COPY package*.json ./
-
-# Install dependencies
-RUN npm install --only=production
-
-# Install canvas dependencies and FFmpeg for Alpine Linux
+# Install system dependencies first
 RUN apk add --no-cache \
     cairo-dev \
     jpeg-dev \
@@ -21,7 +12,23 @@ RUN apk add --no-cache \
     pangomm-dev \
     libjpeg-turbo-dev \
     freetype-dev \
-    ffmpeg
+    ffmpeg \
+    python3 \
+    py3-pip \
+    make \
+    g++
+
+# Set working directory
+WORKDIR /app
+
+# Copy package files
+COPY package*.json ./
+
+# Set environment variable to skip Python check for youtube-dl
+ENV YOUTUBE_DL_SKIP_PYTHON_CHECK=1
+
+# Install Node.js dependencies
+RUN npm install --only=production
 
 # Copy source code
 COPY . .
