@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  ifp-bot:
+    build: .
+    container_name: ifp-core-bot
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+    env_file:
+      - .env
+    volumes:
+      # Persist data files
+      - ./data:/app/data
+      - ./assets:/app/assets
+    networks:
+      - ifp-network
+    depends_on:
+      - redis
+    healthcheck:
+      test: ["CMD", "node", "-e", "console.log('Bot is healthy')"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Optional: Redis for caching and session management
+  redis:
+    image: redis:7-alpine
+    container_name: ifp-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes
+    volumes:
+      - redis-data:/data
+    networks:
+      - ifp-network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Optional: PostgreSQL for advanced data storage
+  postgres:
+    image: postgres:15-alpine
+    container_name: ifp-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ifp_core
+      POSTGRES_USER: ifpbot
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-changeme}
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./db-init:/docker-entrypoint-initdb.d
+    networks:
+      - ifp-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ifpbot -d ifp_core"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+networks:
+  ifp-network:
+    driver: bridge
+
+volumes:
+  redis-data:
+  postgres-data:

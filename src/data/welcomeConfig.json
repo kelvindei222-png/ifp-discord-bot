@@ -1,0 +1,13 @@
+{
+  "1256927911777144884": {
+    "enabled": true,
+    "cardEnabled": true,
+    "dmWelcome": false,
+    "embedColor": "#667eea",
+    "bonusCoins": 100,
+    "mentionUser": true,
+    "message": "Welcome to Impact For Possibilities, Enjoy",
+    "autoRole": "1256927911777144884",
+    "channelId": "1333774965261991959"
+  }
+}

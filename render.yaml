@@ -1,0 +1,12 @@
+services:
+  - type: web
+    name: ifp-discord-bot
+    runtime: docker
+    plan: starter
+    region: oregon
+    branch: main
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: NODE_ENV
+        value: production
+    healthCheckPath: /health
