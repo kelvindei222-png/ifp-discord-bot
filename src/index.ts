@@ -8,6 +8,7 @@ import { loadEvents } from "./handlers/eventHandler";
 import { initializeAuditLogger } from "./lib/auditLogger";
 import { economyManager } from "./lib/economyManager";
 import { initializeActivityTracking } from "./events/activityTracker";
+import * as http from 'http';
 
 config(); // Load .env
 
@@ -38,6 +39,27 @@ async function initializeBot() {
   await client.login(process.env.DISCORD_TOKEN);
   console.log(`✅ Logged in as ${client.user?.tag}`);
 }
+
+// ✅ Create simple HTTP server for Render health checks
+const port = process.env.PORT || 3000;
+const server = http.createServer((req, res) => {
+  if (req.url === '/health' || req.url === '/') {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
+    res.end(JSON.stringify({
+      status: 'healthy',
+      bot: client.user?.tag || 'Starting...',
+      uptime: process.uptime(),
+      timestamp: new Date().toISOString()
+    }));
+  } else {
+    res.writeHead(404, { 'Content-Type': 'text/plain' });
+    res.end('Not Found');
+  }
+});
+
+server.listen(port, () => {
+  console.log(`🌐 Health check server running on port ${port}`);
+});
 
 initializeBot().catch(console.error);
 
